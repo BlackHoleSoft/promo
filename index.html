@@ -87,6 +87,10 @@
                 height: 400px;
                 border-radius: 8px;
             }
+
+            .leaflet-control {
+                display: none !important;
+            }
         </style>
     </head>
     <body>
@@ -183,7 +187,15 @@
 
             points.forEach((point, i) => {
                 const div = document.createElement("div");
-                div.textContent = `${i + 1}: ${point.lat}; ${point.lng}`;
+                div.textContent = `${i + 1}: ${point.lat};${point.lng} `;
+
+                const link = document.createElement('a');
+                link.href = `https://yandex.ru/maps/?mode=search&sll=${point.lng}%2C${point.lat}&text=${point.lat}%2C${point.lng}&z=10`;
+                link.target = '_blank';
+                link.innerText = 'На карте';
+
+                div.appendChild(link);
+
                 resultsBlock.appendChild(div);
             });
 
