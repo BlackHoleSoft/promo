@@ -60,12 +60,18 @@
                 gap: 0.5rem;
             }
 
-            input {
+            input[type="number"] {
                 max-width: 130px;
                 padding: 0.5rem;
                 border-radius: 4px;
                 border: 1px solid #99b;
                 outline: none;
+            }
+
+            input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
+                accent-color: #446;
             }
 
             button {
@@ -91,6 +97,11 @@
             .leaflet-control {
                 display: none !important;
             }
+
+            #status {
+                font-size: 0.75rem;
+                opacity: 0.5;
+            }
         </style>
     </head>
     <body>
@@ -107,6 +118,11 @@
                     <input type="number" value="56.326813" />
                     <input type="number" value="44.006200" />
                 </div>
+            </div>
+
+            <div class="field">
+                <label>Учитывать достопримечательности</label>
+                <input type="checkbox" />
             </div>
 
             <div class="field">
@@ -130,6 +146,7 @@
             </div>
 
             <button onclick="gen()">Сгенерировать</button>
+            <div id="status"></div>
         </div>
         
         <div class="block">
@@ -144,7 +161,8 @@
     </body>
 
     <script>
-        let map = null
+        let map = null;
+        let markerGroup = null;
 
         function getLatLng(lat, lng, angle, randomRadiusRad) {
             // Вычисляем координаты
@@ -179,11 +197,56 @@
             });
         }
 
+        async function getOsmAttractions(lat, lng, radius) {
+            const api = 'https://maps.mail.ru/osm/tools/overpass/api/interpreter';
+            // const api = 'https://overpass-api.de/api/interpreter';
+            const result = await fetch(api, {
+                method: 'POST',
+                body: `data=
+[out:json][timeout:25];
+(
+  node(around:${radius},${lat},${lng})["tourism"="attraction"];
+);
+out body;
+>;
+out skel qt;
+                `,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                }
+            });
+
+            const data = await result.json();
+            return data.elements.map(el => ({ lat: el.lat, lng: el.lon, name: el.tags?.name }));
+        }
+
+        async function getRandomOsmPoints(lat, lng, count, minRange, maxRange) {
+            const basePoint = getRandomGeoPoints(lat, lng, minRange, maxRange, 1, 0)[0];
+
+            const attractions = await getOsmAttractions(basePoint.lat, basePoint.lng, Math.max(20, (maxRange / 4)) * 1000);
+            console.log('attractions', attractions);
+
+            // Перемешиваем массив
+            for (let i = attractions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [attractions[i], attractions[j]] = [attractions[j], attractions[i]];
+            }
+
+            return attractions.slice(0, count);
+        }
+
         function drawResults(points) {
-            const inputs = document.querySelectorAll("input");
+            const inputs = document.querySelectorAll("input[type='number']")
 
             const resultsBlock = document.querySelector("#results");
             resultsBlock.innerHTML = "";
+
+            if (points.length === 0) {
+                const div = document.createElement("div");
+                div.textContent = `Ничего не нашлось )-;`;               
+
+                resultsBlock.appendChild(div);
+            }
 
             points.forEach((point, i) => {
                 const div = document.createElement("div");
@@ -200,19 +263,25 @@
             });
 
             const centerLat = parseFloat(inputs[0].value);
-            const centerLng = parseFloat(inputs[1].value);            
+            const centerLng = parseFloat(inputs[1].value);
+            
+            markerGroup.eachLayer(function (layer) {
+                if (layer instanceof L.Marker) {
+                    markerGroup.removeLayer(layer);
+                }
+            });
 
             // Добавление маркеров
-            points.forEach(({lat, lng}, index) => {
+            points.forEach(({lat, lng, name}, index) => {
                 L.marker([lat, lng])
-                    .addTo(map)
-                    .bindPopup(`Точка ${index + 1}`)
+                    .addTo(markerGroup)
+                    .bindPopup(name || `Точка ${index + 1}`)
                     .openPopup();
             });
         }
 
         function initMap() {
-            const inputs = document.querySelectorAll("input");
+            const inputs = document.querySelectorAll("input[type='number']")
             const centerLat = parseFloat(inputs[0].value);
             const centerLng = parseFloat(inputs[1].value);
 
@@ -223,10 +292,12 @@
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map);
+
+            markerGroup = L.layerGroup().addTo(map);
         }
 
-        function gen() {
-            const inputs = document.querySelectorAll("input");
+        async function gen() {
+            const inputs = document.querySelectorAll("input[type='number']");
             const centerLat = parseFloat(inputs[0].value);
             const centerLng = parseFloat(inputs[1].value);
             const minRadiusKm = parseFloat(inputs[2].value);
@@ -234,13 +305,28 @@
             const pointsCount = parseInt(inputs[4].value);
             const pointsOffsetAngle = parseFloat(inputs[5].value);
 
+            const attractionsCb = document.querySelector("input[type='checkbox']");
+            const attractionsEnabled = attractionsCb.checked;
+
             console.log({ centerLat, centerLng, minRadiusKm, maxRadiusKm, pointsCount, pointsOffsetAngle });
 
-            const points = getRandomGeoPoints(centerLat, centerLng, minRadiusKm, maxRadiusKm, pointsCount, pointsOffsetAngle);
+            document.getElementById('status').innerText = 'Загрузка...';
+
+            try {
+
+            const points = attractionsEnabled ? 
+                await getRandomOsmPoints(centerLat, centerLng, pointsCount, minRadiusKm, maxRadiusKm)
+                : getRandomGeoPoints(centerLat, centerLng, minRadiusKm, maxRadiusKm, pointsCount, pointsOffsetAngle);
 
             console.log(points);
             
             drawResults(points);
+
+            document.getElementById('status').innerText = 'Готово';
+
+            } catch (e) {
+                document.getElementById('status').innerText = 'Попробуйте еще раз';
+            }
         }
 
         document.addEventListener("DOMContentLoaded", () => {
