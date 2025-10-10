@@ -31,20 +31,20 @@
                 flex-direction: column;
                 align-items: center;
                 padding: 2rem 0;
-                gap: 2rem;
+                gap: 1rem;
                 min-width: 350px;
             }
 
             .block {
-                width: 600px;
+                width: 900px;
                 max-width: 98vw;
                 background-color: #ccf;
                 color: #446;
                 display: flex;
                 flex-direction: column;
-                gap: 2rem;
+                gap: 1rem;
                 border-radius: 8px;
-                padding: 2rem 4vw;
+                padding: 1.5rem 4vw;
             }
 
             .field {
@@ -122,7 +122,7 @@
 
             <div class="field">
                 <label>Учитывать достопримечательности</label>
-                <input type="checkbox" />
+                <input type="checkbox" checked />
             </div>
 
             <div class="field">
@@ -205,11 +205,23 @@
                 body: `data=
 [out:json][timeout:25];
 (
-  node(around:${radius},${lat},${lng})["tourism"="attraction"];
+  node["building"="ruins"](around:${radius},${lat},${lng});
+  node["tourism"="information"](around:${radius},${lat},${lng});
+  node["tourism"="attraction"](around:${radius},${lat},${lng});
+  node["tourism"="viewpoint"](around:${radius},${lat},${lng});
+  node["tourism"="museum"](around:${radius},${lat},${lng});
+  node["tourism"="gallery"](around:${radius},${lat},${lng});
+  node["amenity"="place_of_worship"](around:${radius},${lat},${lng});
+  node["amenity"="theatre"](around:${radius},${lat},${lng});
+  node["amenity"="cinema"](around:${radius},${lat},${lng});
+  node["amenity"="fountain"](around:${radius},${lat},${lng});
+  node["amenity"="monument"](around:${radius},${lat},${lng});
+  node["leisure"~"park"](around:${radius},${lat},${lng});  
+  node["natural"~"water"](around:${radius},${lat},${lng});
+  node["natural"~"peak"](around:${radius},${lat},${lng});
+  node["historic"](around:${radius},${lat},${lng});
 );
-out body;
->;
-out skel qt;
+out body 200;
                 `,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
