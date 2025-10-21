@@ -7,6 +7,7 @@
   <SettingsForm 
     @generate="handleGenerate" 
     :loading="loading"
+    :status="status"
   />
   
   <div class="block">
@@ -38,12 +39,14 @@ export default {
   },
   setup() {
     const loading = ref(false)
+    const status = ref('')
     const generatedPoints = ref([])
     const center = reactive({ lat: 56.326813, lng: 44.006200 })
     const mapRef = ref(null)
 
     const handleGenerate = async (settings) => {
       loading.value = true
+      status.value = ''
       center.lat = settings.centerLat
       center.lng = settings.centerLng
       
@@ -69,10 +72,12 @@ export default {
         }
         
         generatedPoints.value = points
+        status.value = 'Готово'
         console.log('Generated points:', points)
       } catch (error) {
         console.error('Error generating points:', error)
         generatedPoints.value = []
+        status.value = 'Возникла ошибка'
       } finally {
         loading.value = false
       }
@@ -80,6 +85,7 @@ export default {
 
     return {
       loading,
+      status,
       generatedPoints,
       center,
       mapRef,

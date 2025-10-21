@@ -10,12 +10,15 @@ html {
 }
 
 body {
+  min-width: 350px;
+}
+
+#app {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 2rem 0;
   gap: 1rem;
-  min-width: 350px;
 }
 
 .block {

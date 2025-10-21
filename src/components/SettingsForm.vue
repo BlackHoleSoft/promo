@@ -52,6 +52,10 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    status: {
+      type: String,
+      default: ''
     }
   },
   emits: ['generate'],
@@ -66,22 +70,13 @@ export default {
       pointsOffsetAngle: 0.5
     })
 
-    const status = ref('')
-
     const generate = () => {
       if (props.loading) return
-      
-      status.value = props.loading ? 'Загрузка...' : 'Готово'
       emit('generate', { ...settings })
-      
-      setTimeout(() => {
-        status.value = props.loading ? 'Попробуйте еще раз' : 'Готово'
-      }, 100)
     }
 
     return {
       settings,
-      status,
       generate
     }
   }
