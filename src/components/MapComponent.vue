@@ -6,21 +6,16 @@
 import { onMounted, onUnmounted, watch, ref } from 'vue'
 import L from 'leaflet'
 
-// Исправление иконок маркеров для Leaflet + Vite
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
-import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png'
-
 const DefaultIcon = L.icon({
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-  iconRetinaUrl: markerIconRetina,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+  iconUrl: '/images/marker-icon-min.png',
+  shadowUrl: '/images/marker-shadow-min.png',
+  iconRetinaUrl: '/images/marker-icon-min.png', // используем тот же файл для retina
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+  shadowSize: [32, 32],
 })
-L.Marker.prototype.options.icon = DefaultIcon
+// L.Marker.prototype.options.icon = DefaultIcon
 
 export default {
   name: 'MapComponent',
@@ -72,15 +67,39 @@ export default {
     // Следим за изменениями точек
     watch(() => props.points, (newPoints) => {
       if (markerGroup.value) {
-        // Очищаем существующие маркеры
-        markerGroup.value.clearLayers()
+        // Очищаем существующие маркеры более надежным способом
+        markerGroup.value.eachLayer(function (layer) {
+          if (layer instanceof L.Marker) {
+            markerGroup.value.removeLayer(layer)
+          }
+        })
 
         // Добавляем новые маркеры
         newPoints.forEach(({ lat, lng, name }, index) => {
-          L.marker([lat, lng])
+          L.marker([lat, lng], { icon: DefaultIcon })
             .addTo(markerGroup.value)
             .bindPopup(name || `Точка ${index + 1}`)
+            .openPopup();
         })
+        
+        // Перемещаем карту к новым точкам
+        if (map.value && newPoints.length > 0) {
+          if (newPoints.length === 1) {
+            // Если одна точка, центрируем на ней
+            map.value.setView([newPoints[0].lat, newPoints[0].lng], 10)
+          } else {
+            // Если несколько точек, показываем все
+            const group = new L.featureGroup(markerGroup.value.getLayers())
+            map.value.fitBounds(group.getBounds(), { padding: [20, 20] })
+          }
+        }
+        
+        // Принудительно перерисовываем карту
+        // if (map.value) {
+        //   setTimeout(() => {
+        //     map.value.invalidateSize()
+        //   }, 100)
+        // }
       }
     }, { deep: true })
 
