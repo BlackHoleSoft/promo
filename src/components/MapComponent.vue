@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { onMounted, onUnmounted, watch, ref } from 'vue'
+import { onMounted, onUnmounted, watch, ref, toRaw } from 'vue'
 import L from 'leaflet'
 
 const DefaultIcon = L.icon({
@@ -42,7 +42,7 @@ export default {
         attribution: '&copy; OpenStreetMap contributors'
       }).addTo(map.value)
 
-      markerGroup.value = L.layerGroup().addTo(map.value)
+      markerGroup.value = L.layerGroup().addTo(toRaw(map.value))
 
       // Скрываем элементы управления Leaflet (как в оригинале)
       const controls = document.querySelectorAll('.leaflet-control')
@@ -53,44 +53,47 @@ export default {
 
     onUnmounted(() => {
       if (map.value) {
-        map.value.remove()
+        toRaw(map.value).remove()
       }
     })
 
     // Следим за изменениями центра карты
     watch(() => props.center, (newCenter) => {
       if (map.value) {
-        map.value.setView([newCenter.lat, newCenter.lng], 7)
+        toRaw(map.value).setView([newCenter.lat, newCenter.lng], 7)
       }
     }, { deep: true })
 
     // Следим за изменениями точек
     watch(() => props.points, (newPoints) => {
       if (markerGroup.value) {
+
         // Очищаем существующие маркеры более надежным способом
-        markerGroup.value.eachLayer(function (layer) {
+        const rawMarkerGroup = toRaw(markerGroup.value)
+        rawMarkerGroup.eachLayer(function (layer) {
           if (layer instanceof L.Marker) {
-            markerGroup.value.removeLayer(layer)
+            rawMarkerGroup.removeLayer(layer)
           }
         })
 
         // Добавляем новые маркеры
         newPoints.forEach(({ lat, lng, name }, index) => {
           L.marker([lat, lng], { icon: DefaultIcon })
-            .addTo(markerGroup.value)
+            .addTo(rawMarkerGroup)
             .bindPopup(name || `Точка ${index + 1}`)
-            .openPopup();
         })
         
         // Перемещаем карту к новым точкам
         if (map.value && newPoints.length > 0) {
+          const rawMap = toRaw(map.value)
           if (newPoints.length === 1) {
             // Если одна точка, центрируем на ней
-            map.value.setView([newPoints[0].lat, newPoints[0].lng], 10)
+            rawMap.setView([newPoints[0].lat, newPoints[0].lng], 10)
           } else {
             // Если несколько точек, показываем все
-            const group = new L.featureGroup(markerGroup.value.getLayers())
-            map.value.fitBounds(group.getBounds(), { padding: [20, 20] })
+            const rawMarkerGroup = toRaw(markerGroup.value)
+            const group = new L.featureGroup(rawMarkerGroup.getLayers())
+            rawMap.fitBounds(group.getBounds(), { padding: [20, 20] })
           }
         }
         
