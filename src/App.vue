@@ -59,7 +59,8 @@ export default {
             settings.pointsCount, 
             settings.minRadiusKm, 
             settings.maxRadiusKm,
-            settings.directions
+            settings.directions,
+            settings.osmTypes
           )
         } else {
           points = getRandomGeoPoints(

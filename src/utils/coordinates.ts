@@ -11,6 +11,24 @@ export interface Directions {
   west: boolean;
 }
 
+export interface OsmTypes {
+  ruins: boolean;
+  information: boolean;
+  attraction: boolean;
+  viewpoint: boolean;
+  museum: boolean;
+  gallery: boolean;
+  placeOfWorship: boolean;
+  theatre: boolean;
+  cinema: boolean;
+  fountain: boolean;
+  monument: boolean;
+  park: boolean;
+  water: boolean;
+  peak: boolean;
+  historic: boolean;
+}
+
 interface AngleRange {
   min: number;
   max: number;
@@ -108,7 +126,64 @@ export function getRandomGeoPoints(
   });
 }
 
-export async function getOsmAttractions(lat: number, lng: number, radius: number): Promise<GeoPoint[]> {
+export async function getOsmAttractions(
+  lat: number, 
+  lng: number, 
+  radius: number, 
+  osmTypes: OsmTypes
+): Promise<GeoPoint[]> {
+  const queries: string[] = [];
+
+  if (osmTypes.ruins) {
+    queries.push(`  node["building"="ruins"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.information) {
+    queries.push(`  node["tourism"="information"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.attraction) {
+    queries.push(`  node["tourism"="attraction"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.viewpoint) {
+    queries.push(`  node["tourism"="viewpoint"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.museum) {
+    queries.push(`  node["tourism"="museum"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.gallery) {
+    queries.push(`  node["tourism"="gallery"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.placeOfWorship) {
+    queries.push(`  node["amenity"="place_of_worship"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.theatre) {
+    queries.push(`  node["amenity"="theatre"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.cinema) {
+    queries.push(`  node["amenity"="cinema"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.fountain) {
+    queries.push(`  node["amenity"="fountain"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.monument) {
+    queries.push(`  node["amenity"="monument"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.park) {
+    queries.push(`  node["leisure"~"park"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.water) {
+    queries.push(`  node["natural"~"water"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.peak) {
+    queries.push(`  node["natural"~"peak"](around:${radius},${lat},${lng});`);
+  }
+  if (osmTypes.historic) {
+    queries.push(`  node["historic"](around:${radius},${lat},${lng});`);
+  }
+
+  if (queries.length === 0) {
+    return [];
+  }
+
   const api = 'https://maps.mail.ru/osm/tools/overpass/api/interpreter';
   // const api = 'https://overpass-api.de/api/interpreter';
   const result = await fetch(api, {
@@ -116,21 +191,7 @@ export async function getOsmAttractions(lat: number, lng: number, radius: number
     body: `data=
 [out:json][timeout:25];
 (
-  node["building"="ruins"](around:${radius},${lat},${lng});
-  node["tourism"="information"](around:${radius},${lat},${lng});
-  node["tourism"="attraction"](around:${radius},${lat},${lng});
-  node["tourism"="viewpoint"](around:${radius},${lat},${lng});
-  node["tourism"="museum"](around:${radius},${lat},${lng});
-  node["tourism"="gallery"](around:${radius},${lat},${lng});
-  node["amenity"="place_of_worship"](around:${radius},${lat},${lng});
-  node["amenity"="theatre"](around:${radius},${lat},${lng});
-  node["amenity"="cinema"](around:${radius},${lat},${lng});
-  node["amenity"="fountain"](around:${radius},${lat},${lng});
-  node["amenity"="monument"](around:${radius},${lat},${lng});
-  node["leisure"~"park"](around:${radius},${lat},${lng});  
-  node["natural"~"water"](around:${radius},${lat},${lng});
-  node["natural"~"peak"](around:${radius},${lat},${lng});
-  node["historic"](around:${radius},${lat},${lng});
+${queries.join('\n')}
 );
 out body 200;
     `,
@@ -149,11 +210,12 @@ export async function getRandomOsmPoints(
   count: number,
   minRange: number,
   maxRange: number,
-  directions: Directions | null = null
+  directions: Directions | null = null,
+  osmTypes: OsmTypes
 ): Promise<GeoPoint[]> {
   const basePoint = getRandomGeoPoints(lat, lng, minRange, maxRange, 1, 0, directions)[0];
 
-  const attractions = await getOsmAttractions(basePoint.lat, basePoint.lng, Math.max(20, (maxRange / 4)) * 1000);
+  const attractions = await getOsmAttractions(basePoint.lat, basePoint.lng, Math.max(20, (maxRange / 4)) * 1000, osmTypes);
   console.log('attractions', attractions);
 
   // Перемешиваем массив
