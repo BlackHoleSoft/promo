@@ -35,6 +35,16 @@
       <input type="number" v-model.number="settings.pointsOffsetAngle" step="0.1" min="0" />
     </div>
 
+    <div class="field">
+      <label>Направления</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" v-model="settings.directions.north" /> Север</label>
+        <label><input type="checkbox" v-model="settings.directions.east" /> Восток</label>
+        <label><input type="checkbox" v-model="settings.directions.south" /> Юг</label>
+        <label><input type="checkbox" v-model="settings.directions.west" /> Запад</label>
+      </div>
+    </div>
+
     <button @click="generate" :disabled="loading">
       {{ loading ? 'Загрузка...' : 'Сгенерировать' }}
     </button>
@@ -67,7 +77,13 @@ export default {
       minRadiusKm: 50,
       maxRadiusKm: 200,
       pointsCount: 3,
-      pointsOffsetAngle: 0.5
+      pointsOffsetAngle: 0.5,
+      directions: {
+        north: true,
+        east: true,
+        south: true,
+        west: true
+      }
     })
 
     const generate = () => {

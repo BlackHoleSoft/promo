@@ -28,7 +28,7 @@ import { ref, reactive } from 'vue'
 import SettingsForm from './components/SettingsForm.vue'
 import ResultsList from './components/ResultsList.vue'
 import MapComponent from './components/MapComponent.vue'
-import { getRandomGeoPoints, getRandomOsmPoints } from './utils/coordinates.js'
+import { getRandomGeoPoints, getRandomOsmPoints } from './utils/coordinates.ts'
 
 export default {
   name: 'App',
@@ -58,7 +58,8 @@ export default {
             settings.centerLng, 
             settings.pointsCount, 
             settings.minRadiusKm, 
-            settings.maxRadiusKm
+            settings.maxRadiusKm,
+            settings.directions
           )
         } else {
           points = getRandomGeoPoints(
@@ -67,7 +68,8 @@ export default {
             settings.minRadiusKm, 
             settings.maxRadiusKm, 
             settings.pointsCount, 
-            settings.pointsOffsetAngle
+            settings.pointsOffsetAngle,
+            settings.directions
           )
         }
         

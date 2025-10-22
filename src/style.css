@@ -46,6 +46,20 @@ body {
   gap: 0.5rem;
 }
 
+.checkbox-group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
 input[type="number"] {
   max-width: 130px;
   padding: 0.5rem;
@@ -72,6 +86,12 @@ button {
 
 button:active {
   background-color: #99b;
+}
+
+button:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 #status {
