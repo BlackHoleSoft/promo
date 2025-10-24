@@ -37,9 +37,11 @@ export default {
       // Инициализация карты
       map.value = L.map('map').setView([props.center.lat, props.center.lng], 7)
 
-      // Добавление тайлов OpenStreetMap
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+      // Добавление тайлов OpenStreetMap (темная тема)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
       }).addTo(map.value)
 
       markerGroup.value = L.layerGroup().addTo(toRaw(map.value))
@@ -115,5 +117,25 @@ export default {
 /* Скрываем элементы управления Leaflet */
 .leaflet-control {
   display: none !important;
+}
+
+/* Темная тема для карты */
+#map {
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+}
+
+.leaflet-popup-content-wrapper {
+  background-color: #161b22;
+  color: #e6edf3;
+  border: 1px solid #30363d;
+}
+
+.leaflet-popup-tip {
+  background-color: #161b22;
+}
+
+.leaflet-container a {
+  color: #58a6ff;
 }
 </style>
