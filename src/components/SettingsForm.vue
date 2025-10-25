@@ -47,68 +47,70 @@
 
     <div class="field">
       <label>Типы объектов OSM</label>
-      <div class="checkbox-group-vertical">
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.ruins" :disabled="!settings.attractionsEnabled" /> 
-          Руины (building=ruins)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.information" :disabled="!settings.attractionsEnabled" /> 
-          Информация (tourism=information)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.attraction" :disabled="!settings.attractionsEnabled" /> 
-          Достопримечательности (tourism=attraction)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.viewpoint" :disabled="!settings.attractionsEnabled" /> 
-          Смотровые площадки (tourism=viewpoint)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.museum" :disabled="!settings.attractionsEnabled" /> 
-          Музеи (tourism=museum)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.gallery" :disabled="!settings.attractionsEnabled" /> 
-          Галереи (tourism=gallery)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.placeOfWorship" :disabled="!settings.attractionsEnabled" /> 
-          Места поклонения (amenity=place_of_worship)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.theatre" :disabled="!settings.attractionsEnabled" /> 
-          Театры (amenity=theatre)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.cinema" :disabled="!settings.attractionsEnabled" /> 
-          Кинотеатры (amenity=cinema)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.fountain" :disabled="!settings.attractionsEnabled" /> 
-          Фонтаны (amenity=fountain)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.monument" :disabled="!settings.attractionsEnabled" /> 
-          Памятники (amenity=monument)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.park" :disabled="!settings.attractionsEnabled" /> 
-          Парки (leisure~park)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.water" :disabled="!settings.attractionsEnabled" /> 
-          Водоемы (natural~water)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.peak" :disabled="!settings.attractionsEnabled" /> 
-          Вершины (natural~peak)
-        </label>
-        <label :class="{ disabled: !settings.attractionsEnabled }">
-          <input type="checkbox" v-model="settings.osmTypes.historic" :disabled="!settings.attractionsEnabled" /> 
-          Исторические объекты (historic)
-        </label>
-      </div>
+      <Spoiler>
+        <div class="checkbox-group-vertical">
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.ruins" :disabled="!settings.attractionsEnabled" /> 
+            Руины (building=ruins)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.information" :disabled="!settings.attractionsEnabled" /> 
+            Информация (tourism=information)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.attraction" :disabled="!settings.attractionsEnabled" /> 
+            Достопримечательности (tourism=attraction)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.viewpoint" :disabled="!settings.attractionsEnabled" /> 
+            Смотровые площадки (tourism=viewpoint)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.museum" :disabled="!settings.attractionsEnabled" /> 
+            Музеи (tourism=museum)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.gallery" :disabled="!settings.attractionsEnabled" /> 
+            Галереи (tourism=gallery)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.placeOfWorship" :disabled="!settings.attractionsEnabled" /> 
+            Места поклонения (amenity=place_of_worship)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.theatre" :disabled="!settings.attractionsEnabled" /> 
+            Театры (amenity=theatre)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.cinema" :disabled="!settings.attractionsEnabled" /> 
+            Кинотеатры (amenity=cinema)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.fountain" :disabled="!settings.attractionsEnabled" /> 
+            Фонтаны (amenity=fountain)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.monument" :disabled="!settings.attractionsEnabled" /> 
+            Памятники (amenity=monument)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.park" :disabled="!settings.attractionsEnabled" /> 
+            Парки (leisure~park)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.water" :disabled="!settings.attractionsEnabled" /> 
+            Водоемы (natural~water)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.peak" :disabled="!settings.attractionsEnabled" /> 
+            Вершины (natural~peak)
+          </label>
+          <label :class="{ disabled: !settings.attractionsEnabled }">
+            <input type="checkbox" v-model="settings.osmTypes.historic" :disabled="!settings.attractionsEnabled" /> 
+            Исторические объекты (historic)
+          </label>
+        </div>
+      </Spoiler>
     </div>
 
     <button @click="generate" :disabled="loading">
@@ -121,9 +123,13 @@
 
 <script>
 import { reactive, ref } from 'vue'
+import Spoiler from './Spoiler.vue'
 
 export default {
   name: 'SettingsForm',
+  components: {
+    Spoiler
+  },
   props: {
     loading: {
       type: Boolean,
