@@ -13,7 +13,7 @@ node_modules/
 .pnpm-debug.log*
 
 # Build outputs
-# dist/
+dist/
 dist-ssr/
 *.local
 
