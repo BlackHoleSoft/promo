@@ -5,7 +5,7 @@
   
   <div v-else>
     <div v-for="(point, index) in points" :key="index">
-      {{ index + 1 }}: {{ point.lat }};{{ point.lng }} 
+      {{ index + 1 }}: {{ Number(point.lat).toFixed(4) }};{{ Number(point.lng).toFixed(4) }} 
       <a 
         :href="`https://yandex.ru/maps/?mode=search&sll=${point.lng}%2C${point.lat}&text=${point.lat}%2C${point.lng}&z=10`"
         target="_blank"

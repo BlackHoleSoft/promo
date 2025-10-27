@@ -24,11 +24,12 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import SettingsForm from './components/SettingsForm.vue'
 import ResultsList from './components/ResultsList.vue'
 import MapComponent from './components/MapComponent.vue'
 import { getRandomGeoPoints, getRandomOsmPoints } from './utils/coordinates.ts'
+import { parseDotsFromUrl, updateUrlWithDots } from './utils/urlUtils.js'
 
 export default {
   name: 'App',
@@ -43,6 +44,15 @@ export default {
     const generatedPoints = ref([])
     const center = reactive({ lat: 56.326813, lng: 44.006200 })
     const mapRef = ref(null)
+
+    // При инициализации проверяем URL на наличие точек
+    onMounted(() => {
+      const dotsFromUrl = parseDotsFromUrl();
+      if (dotsFromUrl.length > 0) {
+        generatedPoints.value = dotsFromUrl;
+        status.value = `Загружено ${dotsFromUrl.length} точек из URL`;
+      }
+    });
 
     const handleGenerate = async (settings) => {
       loading.value = true
@@ -77,6 +87,9 @@ export default {
         generatedPoints.value = points
         status.value = 'Готово'
         console.log('Generated points:', points)
+        
+        // Сохраняем точки в URL
+        updateUrlWithDots(points);
       } catch (error) {
         console.error('Error generating points:', error)
         generatedPoints.value = []
